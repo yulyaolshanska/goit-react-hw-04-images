@@ -15,15 +15,16 @@ export function Searchbar({ onSubmit }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (query) {
-      onSubmit(query);
-    } else {
+    if (query === '') {
       Notify.warning("You didn't enter anything to search");
+      return;
     }
+    onSubmit(query);
+    setQuery('');
   };
 
   const handleChange = e => {
-    setQuery(e.target.value);
+    setQuery(e.target.value.toLowetCase().trim());
   };
 
   return (

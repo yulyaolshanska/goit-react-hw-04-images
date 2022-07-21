@@ -43,7 +43,9 @@ try {
           showLoadMore: true,
           totalImages: resolve.data.totalHits,
         }));
-}, [searchImg, page])
+} catch (error) {
+console.log(error)
+}}, [searchImg, page])
 
 return (
       <AppBox>
