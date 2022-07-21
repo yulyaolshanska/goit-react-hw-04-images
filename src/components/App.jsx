@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader } from './Loader/Loader';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
@@ -10,25 +10,70 @@ import { Button } from 'components/Button/Button';
 import { Notification } from 'components/Notification/Notification';
 import { AppBox } from './app.styled';
 
-export class App extends Component {
-  state = {
-    searchImg: '',
-    page: 1,
-    resolve: [],
-    totalImages: null,
-    loading: false,
-    showLoadMore: false,
-    showModal: false,
-    bigImg: '',
-    imgAlt: '',
-  };
+export function App() {
+  const [searchImg, setSearchImg] = useState('');
+    const [page, setPage] = useState(1);
+  const [resolve, setResolve] = useState([]);
+  const [totalImages, setTotalImages] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  formData = data => {
-    this.setState({
-      searchImg: data,
-      page: 1,
-    });
-  };
+const formData = data => {
+    setSearchImg( data);
+    setPage(1)
+}
+
+ onLoadMore = () => {
+    setPage(prevState => prevState + 1)
+    setLoading(!loading)
+    
+}
+
+return (
+      <AppBox>
+        <Searchbar onSubmit={formData} />
+        {loading && <Loader />}
+        <ImageGallery
+          getBigImageAndAlt={getBigImageAndAlt}
+          modalOpen={toggleModal}
+          images={resolve}
+        ></ImageGallery>
+        {resolve.length >= 12 && resolve.length !== totalImages && (
+          <Button onClick={this.onLoadMore} />
+        )}
+        {resolve.length === totalImages && (
+          <Notification>no more images !</Notification>
+        )}
+
+        {showModal && (
+          <Modal
+            closeModal={toggleModal}
+            imgSrc={bigImg}
+            imgAlt={imgAlt}
+          />
+        )}
+      </AppBox>
+    );
+}
+
+// export class App extends Component {
+//   state = {
+//     searchImg: '',
+//     page: 1,
+//     resolve: [],
+//     totalImages: null,
+//     loading: false,
+//     showLoadMore: false,
+//     showModal: false,
+//     bigImg: '',
+//     imgAlt: '',
+//   };
+
+  // formData = data => {
+  //   this.setState({
+  //     searchImg: data,
+  //     page: 1,
+  //   });
+  // };
 
   toggleModal = e => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
@@ -38,12 +83,12 @@ export class App extends Component {
     this.setState({ bigImg: img, imgAlt: alt });
   };
 
-  onLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-      loading: !prevState.loading,
-    }));
-  };
+  // onLoadMore = () => {
+  //   this.setState(prevState => ({
+  //     page: prevState.page + 1,
+  //     loading: !prevState.loading,
+  //   }));
+  // };
 
   async componentDidUpdate(prevProps, prevState) {
     const prevFoto = prevState.searchImg;
@@ -86,34 +131,34 @@ export class App extends Component {
     }
   }
 
-  render() {
-    const { resolve, loading, showModal, bigImg, imgAlt, totalImages } =
-      this.state;
+  // render() {
+  //   const { resolve, loading, showModal, bigImg, imgAlt, totalImages } =
+  //     this.state;
 
-    return (
-      <AppBox>
-        <Searchbar onSubmit={this.formData} />
-        {loading && <Loader />}
-        <ImageGallery
-          getBigImageAndAlt={this.getBigImageAndAlt}
-          modalOpen={this.toggleModal}
-          images={resolve}
-        ></ImageGallery>
-        {resolve.length >= 12 && resolve.length !== totalImages && (
-          <Button onClick={this.onLoadMore} />
-        )}
-        {resolve.length === totalImages && (
-          <Notification>no more images !</Notification>
-        )}
+  //   return (
+  //     <AppBox>
+  //       <Searchbar onSubmit={this.formData} />
+  //       {loading && <Loader />}
+  //       <ImageGallery
+  //         getBigImageAndAlt={this.getBigImageAndAlt}
+  //         modalOpen={this.toggleModal}
+  //         images={resolve}
+  //       ></ImageGallery>
+  //       {resolve.length >= 12 && resolve.length !== totalImages && (
+  //         <Button onClick={this.onLoadMore} />
+  //       )}
+  //       {resolve.length === totalImages && (
+  //         <Notification>no more images !</Notification>
+  //       )}
 
-        {showModal && (
-          <Modal
-            closeModal={this.toggleModal}
-            imgSrc={bigImg}
-            imgAlt={imgAlt}
-          />
-        )}
-      </AppBox>
-    );
-  }
-}
+  //       {showModal && (
+  //         <Modal
+  //           closeModal={this.toggleModal}
+  //           imgSrc={bigImg}
+  //           imgAlt={imgAlt}
+  //         />
+  //       )}
+  //     </AppBox>
+  //   );
+//   }
+// }
