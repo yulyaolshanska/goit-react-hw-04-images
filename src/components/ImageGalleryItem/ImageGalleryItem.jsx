@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { GalleryItem, GalleryImage } from './imageGalleryItem.styled';
 import { Modal } from 'components/Modal/Modal';
-import PropTypes from 'prop-types';
 
 export const ImageGalleryItem = ({ imgSrc, imgAlt, bigImg, id }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
