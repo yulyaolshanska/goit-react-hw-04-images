@@ -28,6 +28,23 @@ const formData = data => {
     
 }
 
+ useEffect(() => {
+  if(searchImg === "") {
+    return
+  }
+try {
+        setLoading( true );
+        const resolve = await fetchImage(this.state.searchImg, this.state.page);
+        const resolveArr = resolve.data.hits;
+
+        this.setState(prevState => ({
+          resolve: [...prevState.resolve, ...resolveArr],
+          loading: false,
+          showLoadMore: true,
+          totalImages: resolve.data.totalHits,
+        }));
+}, [searchImg, page])
+
 return (
       <AppBox>
         <Searchbar onSubmit={formData} />
