@@ -12,66 +12,76 @@ import { AppBox } from './app.styled';
 
 export function App() {
   const [searchImg, setSearchImg] = useState('');
-    const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [resolve, setResolve] = useState([]);
   const [totalImages, setTotalImages] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showLoadMore, setShowLoadMore] = useState(false);
 
-const formData = data => {
-    setSearchImg( data);
-    setPage(1)
-}
+  const formData = data => {
+    if (searchImg === data) {
+      return;
+    }
+    setSearchImg(data);
+    setPage(1);
+    setResolve([]);
+  };
 
- onLoadMore = () => {
-    setPage(prevState => prevState + 1)
-    setLoading(!loading)
-    
-}
+  const onLoadMore = () => {
+    setPage(prevState => prevState + 1);
+    setLoading(!loading);
+  };
 
- useEffect(() => {
-  if(searchImg === "") {
-    return
-  }
-try {
-        setLoading( true );
-        const resolve = await fetchImage(this.state.searchImg, this.state.page);
+  useEffect(() => {
+    if (searchImg === '') {
+      return;
+    }
+
+    async function fetchImages() {
+      try {
+        setLoading(true);
+        const resolve = await fetchImage(searchImg, page);
         const resolveArr = resolve.data.hits;
 
-        this.setState(prevState => ({
-          resolve: [...prevState.resolve, ...resolveArr],
-          loading: false,
-          showLoadMore: true,
-          totalImages: resolve.data.totalHits,
-        }));
-} catch (error) {
-console.log(error)
-}}, [searchImg, page])
+        setResolve(prevState => [...prevState, ...resolveArr]);
+        setLoading(false);
+        setShowLoadMore(true);
+        setTotalImages(resolve.data.totalHits);
 
-return (
-      <AppBox>
-        <Searchbar onSubmit={formData} />
-        {loading && <Loader />}
-        <ImageGallery
-          getBigImageAndAlt={getBigImageAndAlt}
-          modalOpen={toggleModal}
-          images={resolve}
-        ></ImageGallery>
-        {resolve.length >= 12 && resolve.length !== totalImages && (
-          <Button onClick={this.onLoadMore} />
-        )}
-        {resolve.length === totalImages && (
-          <Notification>no more images !</Notification>
-        )}
+        if (resolveArr.length === 0) {
+          Notify.warning(
+            ' Sorry, there are no images matching your search query. Please try again.'
+          );
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchImages();
+  }, [searchImg, page]);
 
-        {showModal && (
-          <Modal
-            closeModal={toggleModal}
-            imgSrc={bigImg}
-            imgAlt={imgAlt}
-          />
-        )}
-      </AppBox>
-    );
+  return (
+    <AppBox>
+      <Searchbar onSubmit={formData} />
+      {loading && <Loader />}
+      <ImageGallery
+        // getBigImageAndAlt={getBigImageAndAlt}
+        // modalOpen={toggleModal}
+        images={resolve}
+      ></ImageGallery>
+      {resolve.length >= 12 && resolve.length !== totalImages && (
+        <Button onClick={onLoadMore} />
+      )}
+      {resolve.length === totalImages && (
+        <Notification>no more images !</Notification>
+      )}
+
+      {/* {showModal && (
+        <Modal closeModal={toggleModal} imgSrc={bigImg} imgAlt={imgAlt} />
+      )} */}
+    </AppBox>
+  );
 }
 
 // export class App extends Component {
@@ -87,97 +97,97 @@ return (
 //     imgAlt: '',
 //   };
 
-  // formData = data => {
-  //   this.setState({
-  //     searchImg: data,
-  //     page: 1,
-  //   });
-  // };
+// formData = data => {
+//   this.setState({
+//     searchImg: data,
+//     page: 1,
+//   });
+// };
 
-  toggleModal = e => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
-  };
+// toggleModal = e => {
+//   this.setState(({ showModal }) => ({ showModal: !showModal }));
+// };
 
-  getBigImageAndAlt = (img, alt) => {
-    this.setState({ bigImg: img, imgAlt: alt });
-  };
+// getBigImageAndAlt = (img, alt) => {
+//   this.setState({ bigImg: img, imgAlt: alt });
+// };
 
-  // onLoadMore = () => {
-  //   this.setState(prevState => ({
-  //     page: prevState.page + 1,
-  //     loading: !prevState.loading,
-  //   }));
-  // };
+// onLoadMore = () => {
+//   this.setState(prevState => ({
+//     page: prevState.page + 1,
+//     loading: !prevState.loading,
+//   }));
+// };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const prevFoto = prevState.searchImg;
-    const currentFoto = this.state.searchImg;
+// async componentDidUpdate(prevProps, prevState) {
+//   const prevFoto = prevState.searchImg;
+//   const currentFoto = this.state.searchImg;
 
-    if (
-      prevState.searchImg !== this.state.searchImg ||
-      prevState.page !== this.state.page
-    ) {
-      try {
-        this.setState({ loading: true });
-        const resolve = await fetchImage(this.state.searchImg, this.state.page);
-        const resolveArr = resolve.data.hits;
+//   if (
+//     prevState.searchImg !== this.state.searchImg ||
+//     prevState.page !== this.state.page
+//   ) {
+//     try {
+//       this.setState({ loading: true });
+//       const resolve = await fetchImage(this.state.searchImg, this.state.page);
+//       const resolveArr = resolve.data.hits;
 
-        this.setState(prevState => ({
-          resolve: [...prevState.resolve, ...resolveArr],
-          loading: false,
-          showLoadMore: true,
-          totalImages: resolve.data.totalHits,
-        }));
+//       this.setState(prevState => ({
+//         resolve: [...prevState.resolve, ...resolveArr],
+//         loading: false,
+//         showLoadMore: true,
+//         totalImages: resolve.data.totalHits,
+//       }));
 
-        if (prevFoto !== currentFoto) {
-          this.setState({
-            resolve: [...resolveArr],
-            loading: false,
-            showLoadMore: true,
-            totalImages: resolve.data.totalHits,
-          });
-        }
+//       if (prevFoto !== currentFoto) {
+//         this.setState({
+//           resolve: [...resolveArr],
+//           loading: false,
+//           showLoadMore: true,
+//           totalImages: resolve.data.totalHits,
+//         });
+//       }
 
-        if (resolveArr.length === 0) {
-          Notify.warning(
-            ' Sorry, there are no images matching your search query. Please try again.'
-          );
-          this.setState({ loading: false, resolve: [] });
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
+//       if (resolveArr.length === 0) {
+//         Notify.warning(
+//           ' Sorry, there are no images matching your search query. Please try again.'
+//         );
+//         this.setState({ loading: false, resolve: [] });
+//       }
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   }
+// }
 
-  // render() {
-  //   const { resolve, loading, showModal, bigImg, imgAlt, totalImages } =
-  //     this.state;
+// render() {
+//   const { resolve, loading, showModal, bigImg, imgAlt, totalImages } =
+//     this.state;
 
-  //   return (
-  //     <AppBox>
-  //       <Searchbar onSubmit={this.formData} />
-  //       {loading && <Loader />}
-  //       <ImageGallery
-  //         getBigImageAndAlt={this.getBigImageAndAlt}
-  //         modalOpen={this.toggleModal}
-  //         images={resolve}
-  //       ></ImageGallery>
-  //       {resolve.length >= 12 && resolve.length !== totalImages && (
-  //         <Button onClick={this.onLoadMore} />
-  //       )}
-  //       {resolve.length === totalImages && (
-  //         <Notification>no more images !</Notification>
-  //       )}
+//   return (
+//     <AppBox>
+//       <Searchbar onSubmit={this.formData} />
+//       {loading && <Loader />}
+//       <ImageGallery
+//         getBigImageAndAlt={this.getBigImageAndAlt}
+//         modalOpen={this.toggleModal}
+//         images={resolve}
+//       ></ImageGallery>
+//       {resolve.length >= 12 && resolve.length !== totalImages && (
+//         <Button onClick={this.onLoadMore} />
+//       )}
+//       {resolve.length === totalImages && (
+//         <Notification>no more images !</Notification>
+//       )}
 
-  //       {showModal && (
-  //         <Modal
-  //           closeModal={this.toggleModal}
-  //           imgSrc={bigImg}
-  //           imgAlt={imgAlt}
-  //         />
-  //       )}
-  //     </AppBox>
-  //   );
+//       {showModal && (
+//         <Modal
+//           closeModal={this.toggleModal}
+//           imgSrc={bigImg}
+//           imgAlt={imgAlt}
+//         />
+//       )}
+//     </AppBox>
+//   );
 //   }
 // }

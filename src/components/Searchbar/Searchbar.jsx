@@ -19,12 +19,14 @@ export function Searchbar({ onSubmit }) {
       Notify.warning("You didn't enter anything to search");
       return;
     }
+
     onSubmit(query);
-    setQuery('');
+    console.log(query);
+    // setQuery('');
   };
 
   const handleChange = e => {
-    setQuery(e.target.value.toLowetCase().trim());
+    setQuery(e.target.value.toLowerCase().trim());
   };
 
   return (
