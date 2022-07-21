@@ -37,6 +37,5 @@ export class Modal extends Component {
 Modal.propTypes = {
   bigImg: PropTypes.string.isRequired,
   imgAlt: PropTypes.string.isRequired,
-
   closeModal: PropTypes.func.isRequired,
 };

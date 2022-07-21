@@ -67,7 +67,7 @@ export function App() {
       {loading && <Loader />}
       <ImageGallery images={resolve}></ImageGallery>
 
-      {resolve.length >= 12 && resolve.length !== totalImages && (
+      {showLoadMore && resolve.length >= 12 && resolve.length !== totalImages && (
         <>
           {loading && <Loader />}
           <Button onClick={onLoadMore} />
