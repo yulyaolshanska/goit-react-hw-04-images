@@ -21,8 +21,6 @@ export function Searchbar({ onSubmit }) {
     }
 
     onSubmit(query);
-    console.log(query);
-    // setQuery('');
   };
 
   const handleChange = e => {
