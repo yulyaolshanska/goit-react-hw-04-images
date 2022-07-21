@@ -9,19 +9,19 @@ export function Modal({ closeModal, bigImg, imgAlt }) {
       closeModal();
     }
   };
-  const handleKeyDown = e => {
-    if (e.code === 'Escape') {
-      closeModal();
-    }
-  };
 
   useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.code === 'Escape') {
+        closeModal();
+      }
+    };
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown]);
+  }, [closeModal]);
 
   return (
     <Overlay onClick={handleBackdropClick}>
